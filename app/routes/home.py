@@ -17,7 +17,7 @@ def index():
   posts = (
     db
       .query(Post)
-      .order_by(Post.created_at.desc())
+      .order_by(Post.created_at.desc()) # Gets posts in descending order with desc() method, based on 'created_at' date 
       .all()
   )
   
@@ -35,7 +35,7 @@ def login():
 def single(id):
   # get single post by id
   db = get_db()
-  # filter() method serves as SQL's "WHERE" clause and is used with .one() instead of .all() to get a single post
+  # filter() method serves as SQL's "WHERE" clause and here, query() is used with .one() instead of .all() to get a single post
   post = db.query(Post).filter(Post.id == id).one()
 
   # render single post template
