@@ -27,3 +27,11 @@ engine = create_engine(url_object, echo=True, pool_size=20, max_overflow=0)
 Session = sessionmaker(bind=engine)
 # The Base class variable helps us map the models to real MySQL tables.
 Base = declarative_base()
+
+# Base.metadata... creates database after Flask app is ready and we've called init_db()
+def init_db():
+  Base.metadata.create_all(engine) # Same method from seeds.py
+
+# Returns a new session-connection object
+def get_db():
+  return Session()
