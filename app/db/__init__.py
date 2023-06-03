@@ -5,6 +5,8 @@ from sqlalchemy import create_engine, URL
 from sqlalchemy.orm import sessionmaker, declarative_base
 # dotenv works for local development, load_dotenv() reads the file provided as a file path
 from dotenv import load_dotenv
+# used to create global application context
+from flask import g
 
 # load_dotenv() will set the environment variables from .env and we access with os module
 load_dotenv()
@@ -34,4 +36,9 @@ def init_db():
 
 # Returns a new session-connection object
 def get_db():
-  return Session()
+  if 'db' not in g:
+    # store current db connection in app context on 'g' object if it isn't already there
+    # therefore it can return the connection from the g object instead of creating a new Session instance each time
+    g.db = Session()
+
+  return g.db
