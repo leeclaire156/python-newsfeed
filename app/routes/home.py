@@ -33,4 +33,13 @@ def login():
 
 @bp.route('/post/<id>')
 def single(id):
-  return render_template('single-post.html')
+  # get single post by id
+  db = get_db()
+  # filter() method serves as SQL's "WHERE" clause and is used with .one() instead of .all() to get a single post
+  post = db.query(Post).filter(Post.id == id).one()
+
+  # render single post template
+  return render_template(
+    'single-post.html',
+    post=post
+  )
