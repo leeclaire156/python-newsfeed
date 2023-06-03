@@ -31,8 +31,10 @@ Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
 # Base.metadata... creates database after Flask app is ready and we've called init_db()
-def init_db():
+def init_db(app):
   Base.metadata.create_all(engine) # Same method from seeds.py
+
+  app.teardown_appcontext(close_db) # Flask will run close_db() together with its built-in teardown_appcontext() method. 
 
 # Returns a new session-connection object
 def get_db():
@@ -42,3 +44,14 @@ def get_db():
     g.db = Session()
 
   return g.db
+
+# Closes connection to the data base in app (global) context
+# Prevents infinite number of open session connections and we dont have to add a db.close() to every route
+def close_db(e=None):
+  # The pop() method attempts to find and remove db from the g object. 
+  db = g.pop('db', None)
+
+  # If db exists (that is, db doesn't equal None), then db.close() will end the connection.
+  # close_db() function won't run automatically, though. We need to tell Flask to run it whenever a context is destroyed (see def init_db).
+  if db is not None:
+    db.close()
