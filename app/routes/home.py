@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect
 from app.models import Post
 from app.db import get_db
 # Blueprint() lets us consolidate routes onto a single 'bp' object that the parent app can register later.
@@ -21,15 +21,20 @@ def index():
       .all()
   )
   
-  # returning homepage WITH the posts
+  # returning homepage WITH the posts & session "loggedIn" boolean info
   return render_template(
-  'homepage.html',
-  posts=posts
+    'homepage.html',
+    posts=posts,
+    loggedIn=session.get('loggedIn')
 )
 
 @bp.route('/login')
 def login():
-  return render_template('login.html')
+  # not logged in yet
+  if session.get('loggedIn') is None:
+    return render_template('login.html')
+
+  return redirect('/dashboard')
 
 @bp.route('/post/<id>')
 def single(id):
@@ -38,8 +43,9 @@ def single(id):
   # filter() method serves as SQL's "WHERE" clause and here, query() is used with .one() instead of .all() to get a single post
   post = db.query(Post).filter(Post.id == id).one()
 
-  # render single post template
+  # render single post template & session "loggedIn" boolean info
   return render_template(
     'single-post.html',
-    post=post
-  )
+    post=post,
+    loggedIn=session.get('loggedIn')
+)
