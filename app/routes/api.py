@@ -43,3 +43,26 @@ def logout():
   # remove session variables
   session.clear()
   return '', 204 #A status code of 204 indicates that there is no content.
+
+@bp.route('/users/login', methods=['POST'])
+def login():
+  data = request.get_json()
+  db = get_db()
+  
+  try:
+    user = db.query(User).filter(User.email == data['email']).one()
+  except:
+    # if cant find email in db, print error
+    print(sys.exc_info()[0])
+    return jsonify(message = 'Incorrect credentials'), 400
+  
+  # if password doesn't match, also print error
+  if user.verify_password(data['password']) == False:
+    return jsonify(message = 'Incorrect credentials'), 400
+  
+  # if email is there in db and passwords match, perform the following code to create a session and log them in
+  session.clear()
+  session['user_id'] = user.id
+  session['loggedIn'] = True
+
+  return jsonify(id = user.id)
