@@ -37,3 +37,9 @@ def signup():
 
   # Otherwise, returns new user's id to the front end
   return jsonify(id = newUser.id)
+
+@bp.route('/users/logout', methods=['POST'])
+def logout():
+  # remove session variables
+  session.clear()
+  return '', 204 #A status code of 204 indicates that there is no content.
