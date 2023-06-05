@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app.models import User
 from app.db import get_db
 import sys
@@ -28,6 +28,12 @@ def signup():
     # If insert failed, rollbacks db connection to prevent crash and sends error to front end
     db.rollback()
     return jsonify(message = 'Signup failed'), 500
+
+  # clears previous session, adds user id and boolean True as 'logged in' as context for queries/conditional rendering
+  # Remember, you can create sessions in Flask only if you've defined a secret key, which was done in app/__init__.py
+  session.clear()
+  session['user_id'] = newUser.id
+  session['loggedIn'] = True
 
   # Otherwise, returns new user's id to the front end
   return jsonify(id = newUser.id)
