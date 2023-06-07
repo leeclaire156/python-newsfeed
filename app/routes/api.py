@@ -5,7 +5,7 @@ import sys
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
-# POST route that resolves to /api/users
+# POST (create) route that resolves to /api/users
 @bp.route('/users', methods=['POST'])
 def signup():
   data = request.get_json()
@@ -91,3 +91,26 @@ def comment():
   
   # This return runs if everything's ok (as in, the except block didn't run)
   return jsonify(id = newComment.id)
+
+# Remember, PUT route = update in CRUD 
+@bp.route('/posts/upvote', methods=['PUT'])
+def upvote():
+  data = request.get_json()
+  db = get_db()
+
+  try:
+    # create a new vote with incoming id and session id
+    newVote = Vote(
+      post_id = data['post_id'],
+      user_id = session.get('user_id')
+    )
+
+    db.add(newVote)
+    db.commit()
+  except:
+    print(sys.exc_info()[0])
+
+    db.rollback()
+    return jsonify(message = 'Upvote failed'), 500
+
+  return '', 204
