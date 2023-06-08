@@ -11,20 +11,11 @@ from flask import g
 # load_dotenv() will set the environment variables from .env and we access with os module
 load_dotenv()
 
-
-url_object = URL.create(
-    "mysql+pymysql",
-    username="root",
-    password=getenv('DB_PASSWORD'),
-    host="localhost",
-    database="python_news_db",
-)
-
 # Below code connects to database using env variable
 
 # The engine variable manages the overall connection to the database.
 # In production, DB_URL will be a proper environment variable
-engine = create_engine(url_object, echo=True, pool_size=20, max_overflow=0)
+engine = create_engine(getenv('DB_URL'), echo=True, pool_size=20, max_overflow=0)
 # The Session variable generates temporary connections for performing create, read, update, and delete (CRUD) operations.
 Session = sessionmaker(bind=engine)
 # The Base class variable helps us map the models to real MySQL tables.
