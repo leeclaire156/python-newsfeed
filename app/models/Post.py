@@ -18,5 +18,5 @@ class Post(Base):
   votes = relationship('Vote', cascade='all,delete')
 # This dynamic property will perform a SELECT, together with the SQLAlchemy func.count() method, to add up the votes.
   vote_count = column_property(
-  select(func.count(Vote.id)).where(Vote.post_id == id)
+  select(func.count(Vote.id)).where(Vote.post_id == id).scalar_subquery()
 )
